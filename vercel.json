@@ -1,15 +1,6 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "index.ts",
-      "use": "@vercel/bun"
-    }
-  ],
+  "version": 3,
   "routes": [
-    {
-      "src": "/upload",
-      "dest": "index.ts"
-    }
+    { "src": "/upload", "dest": "index.ts" }
   ]
 }
