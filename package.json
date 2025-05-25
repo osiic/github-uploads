@@ -14,6 +14,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "bun": "^1.2.14"
+    "bun": "^1.2.14",
+    "bun-vercel": "^1.0.0-alpha.5"
   }
 }
