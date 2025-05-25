@@ -4,6 +4,8 @@
   "src": "index.ts",
   "type": "module",
   "scripts": {
+    "build": "bun-vercel index.ts",
+    "buildCommand": "bun run build",
     "start": "bun run index.ts"
   },
   "devDependencies": {
@@ -11,5 +13,8 @@
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "bun-vercel": "^1.0.0-alpha.5"
   }
 }
