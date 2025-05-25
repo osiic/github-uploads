@@ -1,7 +1,12 @@
 {
+  "version": 2,
   "functions": {
-    "api/upload.ts": {
-      "runtime": "edge"
+    "api/upload.js": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 10
     }
-  }
+  },
+  "routes": [
+    { "src": "/upload", "methods": ["POST"], "dest": "api/upload.js" }
+  ]
 }

@@ -1,19 +1,27 @@
 {
-  "name": "uploads",
-  "module": "index.ts",
-  "src": "index.ts",
+  "name": "github-uploads",
+  "version": "1.0.0",
   "type": "module",
-  "scripts": {
-    "build": "bun-vercel index.ts",
-    "start": "bun run index.ts"
-  },
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
   "dependencies": {
-    "bun": "^1.2.14"
-  }
+    "dotenv": "^16.3.1",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "node-fetch": "^2.6.7"  
+  },
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/osiic/github-uploads.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/osiic/github-uploads/issues"
+  },
+  "homepage": "https://github.com/osiic/github-uploads#readme"
 }
