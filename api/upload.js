@@ -1,10 +1,13 @@
-import multer from 'multer';
-import fetch from 'node-fetch';
-import { config } from 'dotenv';
+import multer from "multer";
+import fetch from "node-fetch";
+import dotenv from "dotenv";
+import nextConnect from "next-connect";
 
-config(); // load .env
+dotenv.config();
 
 const upload = multer();
+
+const handler = nextConnect();
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const OWNER = process.env.OWNER;
@@ -13,7 +16,7 @@ const BRANCH = process.env.BRANCH;
 
 function addTimestampToFilename(filename) {
   const date = new Date();
-  const pad = (n) => n.toString().padStart(2, '0');
+  const pad = (n) => n.toString().padStart(2, "0");
 
   const yyyy = date.getFullYear();
   const mm = pad(date.getMonth() + 1);
@@ -60,34 +63,23 @@ async function uploadToGitHub(filename, contentBase64) {
   return json.content.download_url;
 }
 
-function bufferToBase64(buffer) {
-  return buffer.toString('base64');
-}
+handler.use(upload.single("file"));
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
+handler.post(async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: "No file uploaded" });
   }
 
-  const uploadMiddleware = upload.single('file');
+  const newFilename = addTimestampToFilename(req.file.originalname);
+  const base64 = req.file.buffer.toString("base64");
 
-  uploadMiddleware(req, res, async (err) => {
-    if (err) return res.status(500).json({ error: err.message });
+  try {
+    const publicUrl = await uploadToGitHub(newFilename, base64);
+    res.status(200).json({ url: publicUrl, filename: newFilename });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
-    const file = req.file;
-    if (!file) {
-      return res.status(400).json({ error: "No file uploaded" });
-    }
-
-    const newFilename = addTimestampToFilename(file.originalname);
-    const base64 = bufferToBase64(file.buffer);
-
-    try {
-      const url = await uploadToGitHub(newFilename, base64);
-      return res.status(200).json({ url, filename: newFilename });
-    } catch (error) {
-      return res.status(500).json({ error: error.message });
-    }
-  });
-}
+export default handler;
 
