@@ -7,8 +7,6 @@ dotenv.config();
 
 const upload = multer();
 
-const handler = nextConnect();
-
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const OWNER = process.env.OWNER;
 const REPO = process.env.REPO;
@@ -63,9 +61,23 @@ async function uploadToGitHub(filename, contentBase64) {
   return json.content.download_url;
 }
 
-handler.use(upload.single("file"));
+// Buat nextConnect instance
+const handler = nextConnect();
 
+// Endpoint GET /api/upload => cek server hidup
+handler.get((req, res) => {
+  res.status(200).json({ status: "ok", message: "Upload API is running" });
+});
+
+// POST /api/upload => upload file
 handler.post(async (req, res) => {
+  await new Promise((resolve, reject) => {
+    upload.single("file")(req, {}, (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+
   if (!req.file) {
     return res.status(400).json({ error: "No file uploaded" });
   }
@@ -74,12 +86,25 @@ handler.post(async (req, res) => {
   const base64 = req.file.buffer.toString("base64");
 
   try {
-    const publicUrl = await uploadToGitHub(newFilename, base64);
-    res.status(200).json({ url: publicUrl, filename: newFilename });
+    const url = await uploadToGitHub(newFilename, base64);
+    res.status(200).json({ url, filename: newFilename });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-export default handler;
+export default function(req, res) {
+  if (req.url === "/" && req.method === "GET") {
+    // GET / => cek server hidup
+    return res.status(200).send("Server is alive");
+  }
+
+  // Semua request selain /api/upload di-handle nextConnect
+  if (req.url.startsWith("/api/upload")) {
+    return handler(req, res);
+  }
+
+  // Kalau bukan itu, return 404
+  res.status(404).json({ error: "Not Found" });
+}
 
