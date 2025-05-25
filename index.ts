@@ -56,6 +56,16 @@ async function uploadToGitHub(filename: string, contentBase64: string) {
   return json.content.download_url;
 }
 
+function arrayBufferToBase64(buffer: ArrayBuffer) {
+  let binary = "";
+  const bytes = new Uint8Array(buffer);
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}
+
 console.log("Starting server on http://localhost:" + PORT);
 
 serve({
@@ -74,7 +84,7 @@ serve({
       const newFilename = addTimestampToFilename(file.name);
 
       const arrayBuffer = await file.arrayBuffer();
-      const base64 = Buffer.from(arrayBuffer).toString("base64");
+      const base64 = arrayBufferToBase64(arrayBuffer);
 
       try {
         const publicUrl = await uploadToGitHub(newFilename, base64);
