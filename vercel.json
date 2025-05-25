@@ -1,3 +1,7 @@
 {
-  "buildCommand": "bun run build"
+  "functions": {
+    "api/upload.ts": {
+      "runtime": "edge"
+    }
+  }
 }
